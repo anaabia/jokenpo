@@ -20,7 +20,7 @@ public class PlayerService {
     public Player createPlayer(PlayerDto playerDto){
         Optional<Player> player = playerRepository.findName(playerDto.getName());
         if (!player.isPresent()){
-            return playerRepository.save(Player.builder().name(playerDto.getName()).build());
+            return playerRepository.save(playerDto.convertToPlayer());
         }
         throw new AppException("Jogador já cadastrado");
     }
@@ -39,6 +39,10 @@ public class PlayerService {
             return playerRepository.delete(uuid);
         }
         throw new AppException("Jogador não cadastrado");
+    }
+
+    public Optional<Player> findPlayer(UUID uuid) {
+        return playerRepository.find(uuid);
     }
 
     public Collection<Player> allPlayers(){
