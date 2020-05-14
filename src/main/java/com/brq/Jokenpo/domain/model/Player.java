@@ -16,4 +16,9 @@ public class Player {
     private UUID uuid;
 
     private String name;
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

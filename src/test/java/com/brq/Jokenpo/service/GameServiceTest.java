@@ -1,6 +1,7 @@
 package com.brq.Jokenpo.service;
 
 import com.brq.Jokenpo.AbstractTest;
+import com.brq.Jokenpo.domain.enums.PlayedType;
 import com.brq.Jokenpo.domain.model.Game;
 import com.brq.Jokenpo.domain.service.GameService;
 import com.brq.Jokenpo.domain.service.PlayerService;
@@ -69,5 +70,21 @@ public class GameServiceTest extends AbstractTest {
         Collection<Game> players = gameService.allGames();
 
         assertThat(players).hasSize(1);
+    }
+
+    @Test
+    public void when_finish_game() {
+        Mockito.when(playerService.findPlayer(ArgumentMatchers.any())).thenReturn(Optional.of(super.getPlayer2()));
+        Mockito.when(gameRepository.findGamerOpen()).thenReturn(Optional.of(getGame()));
+        Game game = gameService.finishGame();
+
+        assertThat(game.getWinner()).isEqualTo(String.format("%s - %s", super.getPlayer2().getName(), PlayedType.PAPER.toString()));
+    }
+
+    @Test
+    public void when_already_finish_game() {
+        Mockito.when(gameRepository.findGamerOpen()).thenReturn(Optional.empty());
+        Throwable exception = assertThrows(AppException.class, () -> gameService.finishGame());
+        assertEquals("Nenhum jogo foi iniciado.", exception.getMessage());
     }
 }

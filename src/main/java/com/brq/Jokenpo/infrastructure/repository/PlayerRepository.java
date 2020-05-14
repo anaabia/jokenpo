@@ -33,7 +33,9 @@ public class PlayerRepository implements PersisteRepository<Player, UUID> {
 
     @Override
     public Optional<Player> findName(String name) {
-        return players.entrySet().stream()
+        return players
+                .entrySet()
+                .stream()
                 .filter(player -> player.getValue().equalsIgnoreCase(name))
                 .findFirst()
                 .map(entry -> Player.builder().name(entry.getValue()).uuid(entry.getKey()).build());
@@ -46,7 +48,9 @@ public class PlayerRepository implements PersisteRepository<Player, UUID> {
 
     @Override
     public Collection<Player> findAll() {
-        return players.entrySet().stream()
+        return players
+                .entrySet()
+                .stream()
                 .map(entry -> Player.builder().name(entry.getValue()).uuid(entry.getKey()).build())
                 .collect(Collectors.toList());
     }

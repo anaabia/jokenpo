@@ -19,7 +19,9 @@ public class Game {
 
     private List<Gamer> gamers;
 
-    private Gamer winner;
+    private String winner;
+
+    private String history;
 
     public Game updateGame(Gamer gamer) {
         this.gamers = this.gamers.stream().filter(gamer1 -> !gamer1.getUuid().equals(gamer.getUuid())).collect(Collectors.toList());

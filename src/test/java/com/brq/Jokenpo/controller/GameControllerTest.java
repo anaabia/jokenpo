@@ -61,6 +61,8 @@ public class GameControllerTest extends AbstractTest {
 
     @Test
     public void shouldDeleteGame() throws Exception {
+        gameRepository.addGamer(getGameDto3().convertToGamer());
+
         mockMvc.perform(delete("/api/game/" + getGameDto3().getUuid()))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -73,4 +75,13 @@ public class GameControllerTest extends AbstractTest {
                 .andExpect(jsonPath("[0].uuid").isNotEmpty())
                 .andDo(print());
     }
+
+    @Test
+    public void shouldFinishGame() throws Exception {
+        mockMvc.perform(get("/api/game/winner"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("winner").value(String.format("%s - %s", super.getPlayer().getName(), PlayedType.SPOCK.toString())))
+                .andDo(print());
+    }
+
 }

@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.UUID;
 
 @SpringBootTest
@@ -51,5 +51,5 @@ public class AbstractTest {
 
     public GamerDto getGameDto3() { return GamerDto.builder().uuid(uuid3).playedType(PlayedType.ROCK).build(); }
 
-    public Game getGame() { return Game.builder().gamers(Collections.singletonList(getGameDto().convertToGamer())).uuid(uuid).winner(null).build(); }
+    public Game getGame() { return Game.builder().gamers(Arrays.asList(getGameDto().convertToGamer(), getGameDto2().convertToGamer(), getGameDto3().convertToGamer())).uuid(uuid).winner(null).build(); }
 }

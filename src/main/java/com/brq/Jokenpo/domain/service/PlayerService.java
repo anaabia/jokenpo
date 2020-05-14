@@ -25,20 +25,18 @@ public class PlayerService {
         throw new AppException("Jogador já cadastrado");
     }
 
-    public Player updatePlayer(UUID uuid, String newName){
-        Optional<Player> player = playerRepository.find(uuid);
-        if (player.isPresent()){
-            return playerRepository.save(Player.builder().name(newName).uuid(uuid).build());
-        }
-        throw new AppException("Jogador não cadastrado");
+    public Player updatePlayer(UUID uuid, String newName) {
+        return playerRepository
+                .find(uuid)
+                .map(player1 -> playerRepository.save(Player.builder().name(newName).uuid(uuid).build()))
+                .orElseThrow(() -> new AppException("Jogador não cadastrado"));
     }
 
     public boolean deletePlayer(UUID uuid){
-        Optional<Player> player = playerRepository.find(uuid);
-        if (player.isPresent()){
-            return playerRepository.delete(uuid);
-        }
-        throw new AppException("Jogador não cadastrado");
+        return playerRepository
+                .find(uuid)
+                .map(game -> playerRepository.delete(uuid))
+                .orElseThrow(() -> new AppException("Jogador não cadastrado"));
     }
 
     public Optional<Player> findPlayer(UUID uuid) {

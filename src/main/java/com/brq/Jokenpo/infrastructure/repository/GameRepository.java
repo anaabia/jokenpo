@@ -6,7 +6,6 @@ import com.brq.Jokenpo.domain.repository.PersisteRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class GameRepository implements PersisteRepository<Game, UUID> {
@@ -14,12 +13,9 @@ public class GameRepository implements PersisteRepository<Game, UUID> {
     private HashMap<UUID, Game> gamers = new HashMap<>();
 
     public Game addGamer(Gamer gamer){
-        Optional<Game> currentGame = findGamerOpen();
-        if (currentGame.isPresent()){
-            return gamers.put(currentGame.get().getUuid(), currentGame.get().updateGame(gamer));
-        } else {
-            return save(Game.builder().gamers(Collections.singletonList(gamer)).build());
-        }
+        return findGamerOpen()
+                .map(currentGame -> gamers.put(currentGame.getUuid(), currentGame.updateGame(gamer)))
+                .orElseGet(() -> save(Game.builder().gamers(Collections.singletonList(gamer)).build()));
     }
 
     @Override
@@ -35,20 +31,22 @@ public class GameRepository implements PersisteRepository<Game, UUID> {
     }
 
     public Optional<Game> findGamerOpen() {
-        Optional<Map.Entry<UUID, Game>> currentGame = gamers.entrySet().stream().filter(entry -> Objects.isNull(entry.getValue().getWinner())).findAny();
-        return currentGame.map(Map.Entry::getValue);
+        return gamers
+                .entrySet()
+                .stream()
+                .filter(entry -> Objects.isNull(entry.getValue().getWinner()))
+                .findAny()
+                .map(Map.Entry::getValue);
     }
 
     @Override
     public Optional<Game> find(UUID id) {
-        Optional<Game> currentGame = findGamerOpen();
-        if (currentGame.isPresent()){
-            Optional<Gamer> gamer = currentGame.get().getGamers().stream().filter(gamer1 -> gamer1.getUuid().equals(id)).findFirst();
-           if (gamer.isPresent()){
-               return  currentGame;
-           }
-        }
-        return Optional.empty();
+        return findGamerOpen().flatMap(currentGame -> currentGame
+                .getGamers()
+                .stream()
+                .filter(gamer1 -> gamer1.getUuid().equals(id))
+                .findFirst()
+                .map(gamer -> currentGame));
     }
 
     @Override
@@ -58,12 +56,14 @@ public class GameRepository implements PersisteRepository<Game, UUID> {
 
     @Override
     public boolean delete(UUID uuid) {
-        Optional<Game> currentGame = findGamerOpen();
-        if (currentGame.isPresent()){
-            currentGame.get().removeGame(uuid);
-            return currentGame.get().getGamers().stream().noneMatch(gamer1 -> gamer1.getUuid().equals(uuid));
-        }
-        return false;
+        return findGamerOpen()
+                .map(currentGame -> {
+                    currentGame.removeGame(uuid);
+                    return currentGame.getGamers()
+                            .stream()
+                            .noneMatch(gamer1 -> gamer1.getUuid().equals(uuid));
+                })
+                .orElse(false);
     }
 
     @Override

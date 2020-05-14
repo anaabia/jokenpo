@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,12 +24,17 @@ public class GameController {
     }
 
     @DeleteMapping({"/{uuid}"})
-    public ResponseEntity deleteGame(@PathVariable(name = "uuid") UUID uuid) {
+    public ResponseEntity<Boolean> deleteGame(@PathVariable(name = "uuid") UUID uuid) {
         return ResponseEntity.ok(gameService.deleteGamer(uuid));
     }
 
     @GetMapping()
-    public ResponseEntity Games() {
+    public ResponseEntity<Collection<Game>> Games() {
         return ResponseEntity.ok(gameService.allGames());
+    }
+
+    @GetMapping("/winner")
+    public ResponseEntity<Game> gameWinner() {
+        return ResponseEntity.ok(gameService.finishGame());
     }
 }

@@ -17,4 +17,9 @@ public class Gamer {
     private UUID uuid;
 
     private PlayedType playedType;
+
+    @Override
+    public String toString() {
+        return uuid.toString() + " - " +playedType ;
+    }
 }
